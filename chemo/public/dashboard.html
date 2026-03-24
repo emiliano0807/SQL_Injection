@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Administrativo | Cloud Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --surface-color: #ffffff;
+            --text-main: #1f2937;
+            --text-secondary: #6b7280;
+            --primary-color: #4f46e5; /* Indigo */
+            --secondary-color: #ec4899; /* Pink */
+            --success-color: #10b981;
+            --border-light: #e5e7eb;
+            --font-main: 'Poppins', sans-serif;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .container {
+            flex: 1;
+            padding: 2rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(to right, #4f46e5, #3b82f6);
+            border-radius: 12px;
+            padding: 2.5rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Overview Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background-color: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .stat-icon {
+            padding: 0.5rem;
+            border-radius: 8px;
+            background-color: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        /* Details Section */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--bg-color);
+            font-size: 0.9rem;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Logout Button */
+        .btn-logout {
+            background-color: white;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #fef2f2;
+            color: #ef4444;
+            border-color: #f87171;
+        }
+
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            CloudSpace
+        </div>
+        <div class="user-profile">
+            <button class="btn-logout" id="btnLogout">Cerrar Sesión</button>
+            <div class="avatar" id="userAvatar">A</div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="welcome-banner">
+            <h1>Hola, <span id="userName">Administrador</span></h1>
+            <p>Aquí tienes el resumen operativo de tu entorno de trabajo actual.</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-header">
+                    <span>Estado del Sistema</span>
+                    <span class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
+                </div>
+                <div class="stat-value" style="color: var(--success-color);">Óptimo</div>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-header">
+                    <span>Nodos Activos</span>
+                    <span class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></span>
+                </div>
+                <div class="stat-value">4/4</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-header">
+                    <span>Latencia Media</span>
+                    <span class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
+                </div>
+                <div class="stat-value">24ms</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-header">
+                    <span>Tiempo de Sesión</span>
+                    <span class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+                </div>
+                <div class="stat-value" id="uptime">00:00</div>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <div class="card">
+                <h3>Actividad Reciente</h3>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">Inicio de sesión verificado</span>
+                    <span id="sessionTime">...</span>
+                </div>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">Sincronización de bases de datos</span>
+                    <span>Hace 2 mins</span>
+                </div>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">Comprobación de firewall</span>
+                    <span style="color: var(--success-color);">Aprobada</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Detalles de Conexión</h3>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">IP</span>
+                    <span>Automática</span>
+                </div>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">Protocolo</span>
+                    <span>TLS 1.3</span>
+                </div>
+                <div class="info-row">
+                    <span style="color: var(--text-secondary);">Permisos</span>
+                    <span>Administrador</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Cargar datos del usuario
+        fetch('/api/user')
+            .then(res => { if (!res.ok) { return; } return res.json(); })
+            .then(data => { 
+                if (data && data.usuario) { 
+                    document.getElementById('userName').textContent = data.usuario; 
+                    document.getElementById('userAvatar').textContent = data.usuario.charAt(0).toUpperCase();
+                } 
+            })
+            .catch(() => console.log('Modo de previsualización local iniciado.'));
+
+        // Hora de conexión formateada
+        const loginTime = new Date();
+        document.getElementById('sessionTime').textContent = 
+            `${loginTime.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}`;
+
+        // Contador de tiempo (Uptime)
+        function updateUptime() {
+            const now = new Date();
+            const diff = Math.floor((now - loginTime) / 1000);
+            const mins = Math.floor(diff / 60).toString().padStart(2, '0');
+            const secs = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('uptime').textContent = `${mins}:${secs}`;
+        }
+        setInterval(updateUptime, 1000); 
+        updateUptime();
+
+        // Logout
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            try { await fetch('/logout', { method: 'POST' }); } catch(e) {}
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inicio de sesión — CloudSpace">
+    <title>Iniciar Sesión | CloudSpace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border: #d1d5db;
+            --border-focus: #a5b4fc;
+            --error-bg: #fef2f2;
+            --error-text: #ef4444;
+            --success-bg: #ecfdf5;
+            --success-text: #10b981;
+            --font-main: 'Poppins', sans-serif;
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Patrón de fondo sutil */
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Contenedor Principal */
+        .login-wrapper {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            animation: slideUp 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes slideUp { 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: var(--shadow-card);
+            padding: 2.5rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: #eef2ff;
+            color: var(--primary);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Formulario */
+        .input-group { 
+            margin-bottom: 1.25rem; 
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #9ca3af;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.75rem 2.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--border-focus);
+        }
+
+        /* Botón Mostrar Contraseña */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover { color: var(--primary); }
+
+        /* Botón Login */
+        .btn-login {
+            width: 100%;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mensajes */
+        .message-container { margin-top: 1rem; min-height: 20px; }
+        .message {
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex; gap: 8px; align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .message.show { opacity: 1; }
+        .message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid #a7f3d0; }
+        .message.error { background: var(--error-bg); color: var(--error-text); border: 1px solid #fecaca; }
+
+        /* Footer */
+        .login-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .login-footer a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        /* Animaciones */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="brand-logo">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                </div>
+                <h1>Bienvenido de nuevo</h1>
+                <p class="subtitle">Ingresa a tu entorno de trabajo</p>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="input-group">
+                    <label for="usuario">Usuario corporativo</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <input type="text" id="usuario" name="usuario" placeholder="ej. admin@cloudspace.com" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="contrasena">Contraseña</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                            <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg class="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                <line x1="1" y1="1" x2="23" y2="23" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="message-container" id="messageContainer"></div>
+
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <span class="btn-text">Iniciar Sesión</span>
+                    <div class="btn-loader" style="display:none">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>¿Problemas para acceder? <a href="#">Contacta a soporte</a></p>
+                <p style="margin-top: 12px; font-size: 0.8rem;">
+                    <a href="/lab" style="color: var(--text-muted);">Ir al entorno de pruebas</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle contraseña
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('contrasena');
+        const eyeOpen = toggleBtn.querySelector('.eye-open');
+        const eyeClosed = toggleBtn.querySelector('.eye-closed');
+
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeOpen.style.display = isPassword ? 'none' : 'block';
+            eyeClosed.style.display = isPassword ? 'block' : 'none';
+        });
+
+        // Formulario de login
+        const form = document.getElementById('loginForm');
+        const messageContainer = document.getElementById('messageContainer');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnText = btnLogin.querySelector('.btn-text');
+        const btnLoader = btnLogin.querySelector('.btn-loader');
+
+        function showMessage(text, type) {
+            // Iconos SVG limpios para éxito y error
+            const iconSvg = type === 'success' 
+                ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+            
+            messageContainer.innerHTML = `<div class="message ${type}">${iconSvg} ${text}</div>`;
+            setTimeout(() => {
+                const msg = messageContainer.querySelector('.message');
+                if (msg) msg.classList.add('show');
+            }, 10);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'flex';
+            btnLogin.disabled = true;
+            messageContainer.innerHTML = '';
+
+            const usuario = document.getElementById('usuario').value.trim();
+            const contrasena = document.getElementById('contrasena').value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, contrasena })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message || 'Acceso concedido', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1200);
+                } else {
+                    showMessage(data.message || 'Credenciales inválidas', 'error');
+                    const card = document.querySelector('.login-card');
+                    card.classList.add('shake');
+                    setTimeout(() => card.classList.remove('shake'), 500);
+                }
+            } catch (err) {
+                // Mensaje por defecto para pruebas locales si no hay backend
+                showMessage('Error de conexión con el servidor', 'error');
+                const card = document.querySelector('.login-card');
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 500);
+            } finally {
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+                btnLogin.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "login-app",
+  "version": "1.0.0",
+  "description": "Formulario de login con base de datos SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "vulnerable": "node server_vulnerable.js"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.11",
+    "better-sqlite3": "^9.6.0",
+    "express": "^4.22.1",
+    "express-session": "^1.19.0",
+    "graphql": "^16.13.1",
+    "graphql-http": "^1.22.0",
+    "xpath": "^0.0.34"
+  }
+}
