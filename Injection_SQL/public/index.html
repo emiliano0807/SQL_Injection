@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Inyección SQL - Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background: #f4f4f4; }
+    .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { color: #333; }
+    label { display: block; margin: 10px 0 5px; }
+    input, select, button { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { background: #4CAF50; color: white; font-size: 16px; cursor: pointer; border: none; }
+    button:hover { background: #45a049; }
+    button.small { width: auto; padding: 5px 10px; margin: 0 5px 0 0; }
+    .result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; }
+    .success { background: #ddffdd; border-left: 6px solid #4CAF50; }
+    .error { background: #ffdddd; border-left: 6px solid #f44336; }
+    .query { font-family: monospace; background: #f0f0f0; padding: 10px; border-radius: 4px; margin: 10px 0; white-space: pre-wrap; word-break: break-word; }
+    .explicacion { background: #fff3cd; border-left: 6px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+    .user-info { font-weight: bold; margin: 10px 0; }
+    .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Simulador de Inyección SQL</h2>
+    <div class="explicacion">
+      <strong>📘 ¿Qué es la inyección SQL?</strong>
+      <p>Es una vulnerabilidad que permite a un atacante interferir con las consultas que una aplicación hace a su base de datos. Ocurre cuando se introducen datos maliciosos en una consulta SQL sin la debida sanitización.</p>
+      <p><strong>Ejemplo clásico:</strong> En un login, si el campo usuario recibe <code>' OR '1'='1' -- </code>, la consulta se convierte en:</p>
+      <code>SELECT * FROM usuarios WHERE username = '' OR '1'='1' -- ' AND password = '...'</code>
+      <p>Esto siempre devuelve resultados porque <code>'1'='1'</code> es verdadero y el resto se comenta. Así se puede acceder sin contraseña.</p>
+      <p><strong>En esta demo:</strong> Prueba el modo <strong>Vulnerable</strong> con la inyección y luego el modo <strong>Seguro</strong> (parametrizado) para ver la diferencia.</p>
+    </div>
+
+    <div class="toolbar">
+      <button id="newTabBtn" class="small">➕ Abrir en nueva pestaña</button>
+      <span>(Comprueba que la sesión se mantiene entre pestañas)</span>
+    </div>
+
+    <div id="sessionInfo" class="user-info"></div>
+
+    <label for="mode">Modo de login:</label>
+    <select id="mode">
+      <option value="vulnerable">Vulnerable (concatenación)</option>
+      <option value="seguro">Seguro (parametrizado)</option>
+    </select>
+
+    <form id="loginForm">
+      <label for="username">Usuario:</label>
+      <input type="text" id="username" name="username" placeholder="ej: ' OR '1'='1' -- " required>
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" name="password" placeholder="*****">
+      <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <div id="result" class="result"></div>
+    <div id="queryDisplay" class="query" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.getElementById('newTabBtn').addEventListener('click', () => {
+      window.open(window.location.href, '_blank');
+    });
+
+    async function actualizarSesion() {
+      const res = await fetch('/session');
+      const data = await res.json();
+      const sessionDiv = document.getElementById('sessionInfo');
+      if (data.user) {
+        sessionDiv.innerHTML = `✅ Sesión iniciada como: <strong>${data.user}</strong>`;
+      } else {
+        sessionDiv.innerHTML = '🔓 No has iniciado sesión.';
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const mode = document.getElementById('mode').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const resultDiv = document.getElementById('result');
+      const queryDiv = document.getElementById('queryDisplay');
+
+      try {
+        const response = await fetch(`/login/${mode}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+
+        queryDiv.style.display = 'block';
+        queryDiv.textContent = `Consulta ejecutada: ${data.consulta || 'No disponible'}`;
+
+        resultDiv.style.display = 'block';
+        resultDiv.className = `result ${data.acceso ? 'success' : 'error'}`;
+        resultDiv.innerHTML = `
+          <strong>${data.acceso ? '✅ ACCESO CONCEDIDO' : '❌ ACCESO DENEGADO'}</strong><br>
+          ${data.mensaje}
+          ${data.usuario ? `<br>Bienvenido, <strong>${data.usuario}</strong>.` : ''}
+        `;
+
+        if (mode === 'vulnerable' && (username.includes("' OR '1'='1'") || username.includes("' OR 1=1"))) {
+          resultDiv.innerHTML += `<br><br><strong>💡 Explicación:</strong> Has realizado una inyección SQL exitosa. La consulta generada fue: <code>${data.consulta}</code>. La parte <code>' OR '1'='1'</code> hace que la condición sea siempre verdadera, y el <code>--</code> comenta el resto, devolviendo todos los usuarios. En este caso, como la consulta devuelve varios, hemos iniciado sesión como el primer usuario (probablemente <strong>admin</strong>).`;
+        }
+
+        // Si el usuario es admin, redirigir a /admin
+        if (data.acceso && data.usuario === 'admin') {
+          window.location.href = '/admin';
+        }
+
+        actualizarSesion();
+      } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = `<strong>❌ Error de conexión</strong><br>${error.message}`;
+      }
+    });
+
+    actualizarSesion();
+  </script>
+</body>
+</html>
